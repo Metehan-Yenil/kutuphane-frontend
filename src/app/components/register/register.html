@@ -1,0 +1,85 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <h1>📚 Yeni Hesap Oluştur</h1>
+      <p>Kütüphane rezervasyon sistemine kaydolun</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+      <div class="alert alert-success" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <div class="alert alert-danger" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-group">
+        <label for="name">Ad Soyad</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="form-control"
+          [(ngModel)]="registerData.name"
+          required
+          placeholder="Adınız Soyadınız"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          [(ngModel)]="registerData.email"
+          required
+          email
+          placeholder="ornek@email.com"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Şifre</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control"
+          [(ngModel)]="registerData.password"
+          required
+          minlength="6"
+          placeholder="En az 6 karakter"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="role">Kullanıcı Tipi</label>
+        <select
+          id="role"
+          name="role"
+          class="form-control"
+          [(ngModel)]="registerData.role"
+          required
+        >
+          <option value="USER">Kullanıcı</option>
+          <option value="ADMIN">Admin</option>
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-success btn-block"
+        [disabled]="!registerForm.valid || isLoading"
+      >
+        {{ isLoading ? 'Kaydediliyor...' : 'Kayıt Ol' }}
+      </button>
+
+      <div class="login-link">
+        Zaten hesabınız var mı? <a routerLink="/login">Giriş yapın</a>
+      </div>
+    </form>
+  </div>
+</div>

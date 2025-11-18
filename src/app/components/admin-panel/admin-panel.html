@@ -1,0 +1,339 @@
+<div class="admin-panel">
+  <div class="admin-header">
+    <h1>🔧 Admin Paneli</h1>
+  </div>
+
+  <div class="admin-tabs">
+    <button 
+      [class.active]="activeTab() === 'dashboard'" 
+      (click)="switchTab('dashboard')">
+      📊 Dashboard
+    </button>
+    <button 
+      [class.active]="activeTab() === 'users'" 
+      (click)="switchTab('users')">
+      👥 Kullanıcılar
+    </button>
+    <button 
+      [class.active]="activeTab() === 'rooms'" 
+      (click)="switchTab('rooms')">
+      🚪 Odalar
+    </button>
+    <button 
+      [class.active]="activeTab() === 'equipment'" 
+      (click)="switchTab('equipment')">
+      💻 Ekipmanlar
+    </button>
+    <button 
+      [class.active]="activeTab() === 'reservations'" 
+      (click)="switchTab('reservations')">
+      📅 Bekleyen Rezervasyonlar
+    </button>
+    <button 
+      [class.active]="activeTab() === 'all-reservations'" 
+      (click)="switchTab('all-reservations')">
+      📋 Tüm Rezervasyonlar
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="error-message">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="loading">Yükleniyor...</div>
+  }
+
+  <!-- Dashboard Tab -->
+  @if (activeTab() === 'dashboard' && stats()) {
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <h3>👥 Kullanıcılar</h3>
+        <p class="stat-number">{{ stats()!.totalUsers }}</p>
+        <p class="stat-detail">{{ stats()!.totalAdmins }} Admin | {{ stats()!.totalRegularUsers }} Kullanıcı</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>🚪 Odalar</h3>
+        <p class="stat-number">{{ stats()!.totalRooms }}</p>
+        <p class="stat-detail">{{ stats()!.emptyRooms }} Boş | {{ stats()!.occupiedRooms }} Dolu | {{ stats()!.maintenanceRooms }} Bakımda</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>💻 Ekipmanlar</h3>
+        <p class="stat-number">{{ stats()!.totalEquipment }}</p>
+        <p class="stat-detail">{{ stats()!.availableEquipment }} Müsait | {{ stats()!.reservedEquipment }} Rezerveli</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>📅 Rezervasyonlar</h3>
+        <p class="stat-number">{{ stats()!.totalReservations }}</p>
+        <p class="stat-detail">{{ stats()!.pendingReservations }} Bekleyen</p>
+      </div>
+
+      <div class="stat-card">
+        <h3>⏰ Zaman Dilimleri</h3>
+        <p class="stat-number">{{ stats()!.totalTimeSlots }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- Users Tab -->
+  @if (activeTab() === 'users') {
+    <div class="tab-content">
+      <div class="tab-header">
+        <h2>Kullanıcı Yönetimi</h2>
+        <button class="btn-primary" (click)="showCreateAdminModal.set(true)">
+          ➕ Yeni Admin Ekle
+        </button>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>İsim</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>İşlemler</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.userId) {
+            <tr>
+              <td>{{ user.userId }}</td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span [class]="user.role === 'ADMIN' ? 'badge-admin' : 'badge-user'">
+                  {{ user.role }}
+                </span>
+              </td>
+              <td class="action-buttons">
+                @if (user.role === 'USER') {
+                  <button class="btn-small" (click)="promoteToAdmin(user.userId)">
+                    👑 Admin Yap
+                  </button>
+                }
+                <button class="btn-small btn-danger" (click)="deleteUser(user.userId)">
+                  🗑️ Sil
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Rooms Tab -->
+  @if (activeTab() === 'rooms') {
+    <div class="tab-content">
+      <h2>Oda Yönetimi</h2>
+      
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Oda Adı</th>
+            <th>Kapasite</th>
+            <th>Durum</th>
+            <th>İşlemler</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (room of rooms(); track room.roomId) {
+            <tr>
+              <td>{{ room.roomId }}</td>
+              <td>{{ room.name }}</td>
+              <td>{{ room.capacity }} kişi</td>
+              <td>
+                <span [class]="'badge-' + room.status.toLowerCase()">
+                  {{ getRoomStatusText(room.status) }}
+                </span>
+              </td>
+              <td>
+                <select (change)="updateRoomStatus(room.roomId, $any($event.target).value)">
+                  <option value="">Durum Değiştir</option>
+                  <option value="EMPTY">Boş</option>
+                  <option value="OCCUPIED">Dolu</option>
+                  <option value="MAINTENANCE">Bakımda</option>
+                </select>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Equipment Tab -->
+  @if (activeTab() === 'equipment') {
+    <div class="tab-content">
+      <h2>Ekipman Yönetimi</h2>
+      
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Ekipman Adı</th>
+            <th>Tür</th>
+            <th>Durum</th>
+            <th>İşlemler</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (equip of equipment(); track equip.equipmentId) {
+            <tr>
+              <td>{{ equip.equipmentId }}</td>
+              <td>{{ equip.name }}</td>
+              <td>{{ equip.type }}</td>
+              <td>
+                <span [class]="'badge-' + equip.status.toLowerCase()">
+                  {{ getEquipmentStatusText(equip.status) }}
+                </span>
+              </td>
+              <td>
+                <select (change)="updateEquipmentStatus(equip.equipmentId, $any($event.target).value)">
+                  <option value="">Durum Değiştir</option>
+                  <option value="AVAILABLE">Müsait</option>
+                  <option value="RESERVED">Rezerveli</option>
+                  <option value="MAINTENANCE">Bakımda</option>
+                </select>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Pending Reservations Tab -->
+  @if (activeTab() === 'reservations') {
+    <div class="tab-content">
+      <h2>Bekleyen Rezervasyonlar</h2>
+      
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Kullanıcı</th>
+            <th>Oda/Ekipman</th>
+            <th>Tarih</th>
+            <th>Saat</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (res of pendingReservations(); track res.reservationId) {
+            <tr>
+              <td>{{ res.reservationId }}</td>
+              <td>{{ res.user.name }}</td>
+              <td>{{ res.room?.name || res.equipment?.name }}</td>
+              <td>{{ res.reservationDate }}</td>
+              <td>{{ res.timeSlot.startTime }} - {{ res.timeSlot.endTime }}</td>
+              <td>
+                <button class="btn-success" (click)="confirmReservation(res.reservationId)">
+                  ✅ Onayla
+                </button>
+              </td>
+            </tr>
+          }
+          @empty {
+            <tr>
+              <td colspan="6" class="text-center">Bekleyen rezervasyon yok</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- All Reservations Tab -->
+  @if (activeTab() === 'all-reservations') {
+    <div class="tab-content">
+      <h2>Tüm Rezervasyonlar</h2>
+      
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Kullanıcı</th>
+            <th>Oda/Ekipman</th>
+            <th>Tarih</th>
+            <th>Saat</th>
+            <th>Durum</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (res of allReservations(); track res.reservationId) {
+            <tr>
+              <td>{{ res.reservationId }}</td>
+              <td>{{ res.user.name }}</td>
+              <td>{{ res.room?.name || res.equipment?.name }}</td>
+              <td>{{ res.reservationDate }}</td>
+              <td>{{ res.timeSlot.startTime }} - {{ res.timeSlot.endTime }}</td>
+              <td>
+                <span [class]="'badge-status-' + res.status.toLowerCase()">
+                  {{ res.status }}
+                </span>
+              </td>
+              <td class="action-buttons">
+                @if (res.status === 'BEKLENIYOR') {
+                  <button class="btn-success" (click)="confirmReservation(res.reservationId)">
+                    ✅ Onayla
+                  </button>
+                }
+                @if (res.status !== 'IPTAL_EDILDI') {
+                  <button class="btn-danger" (click)="cancelReservation(res.reservationId)">
+                    ❌ İptal Et
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="text-center">Rezervasyon bulunamadı</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Create Admin Modal -->
+  @if (showCreateAdminModal()) {
+    <div class="modal-overlay" (click)="showCreateAdminModal.set(false)">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h2>Yeni Admin Oluştur</h2>
+        
+        <form (ngSubmit)="createAdmin()">
+          <div class="form-group">
+            <label>İsim</label>
+            <input type="text" [(ngModel)]="newAdmin.name" name="name" required>
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="newAdmin.email" name="email" required>
+          </div>
+
+          <div class="form-group">
+            <label>Şifre</label>
+            <input type="password" [(ngModel)]="newAdmin.password" name="password" required>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" (click)="showCreateAdminModal.set(false)">
+              İptal
+            </button>
+            <button type="submit" class="btn-primary">
+              Oluştur
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

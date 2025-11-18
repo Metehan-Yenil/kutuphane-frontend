@@ -1,0 +1,144 @@
+<div class="reservations-container">
+  <div class="page-header">
+    <h1>📋 Rezervasyonlarım</h1>
+    <p>Tüm rezervasyonlarınızı görüntüleyin ve yönetin</p>
+  </div>
+
+  <div class="alert alert-success" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="alert alert-danger" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tabs-container card">
+    <div class="tabs">
+      <button 
+        [class.active]="selectedTab === 'active'"
+        (click)="selectedTab = 'active'"
+        class="tab-btn"
+      >
+        Aktif Rezervasyonlar
+        <span class="badge badge-info">{{ activeReservations.length }}</span>
+      </button>
+      <button 
+        [class.active]="selectedTab === 'all'"
+        (click)="selectedTab = 'all'"
+        class="tab-btn"
+      >
+        Tümü
+        <span class="badge badge-info">{{ allReservations.length }}</span>
+      </button>
+      <button 
+        [class.active]="selectedTab === 'past'"
+        (click)="selectedTab = 'past'"
+        class="tab-btn"
+      >
+        Geçmiş Rezervasyonlar
+        <span class="badge badge-info">{{ pastReservations.length }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="card" *ngIf="isLoading">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Rezervasyonlar yükleniyor...</p>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="card" *ngIf="!isLoading && getCurrentReservations().length === 0">
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>Rezervasyon Bulunamadı</h3>
+      <p>{{ selectedTab === 'active' ? 'Henüz aktif rezervasyonunuz bulunmuyor.' : 'Bu kategoride rezervasyon bulunmuyor.' }}</p>
+      <a routerLink="/rooms" class="btn btn-primary">Yeni Rezervasyon Yap</a>
+    </div>
+  </div>
+
+  <!-- Reservations List -->
+  <div class="card" *ngIf="!isLoading && getCurrentReservations().length > 0">
+    <div class="reservations-list">
+      <div 
+        *ngFor="let reservation of getCurrentReservations()"
+        class="reservation-item"
+        [class.cancelled]="reservation.status === 'IPTAL_EDILDI'"
+      >
+        <div class="reservation-header">
+          <div class="reservation-type">
+            <span class="type-icon" *ngIf="reservation.room">🏢</span>
+            <span class="type-icon" *ngIf="reservation.equipment">💻</span>
+            <div>
+              <h3>
+                {{ reservation.room?.name || reservation.equipment?.name }}
+              </h3>
+              <p class="resource-type">
+                {{ reservation.room ? 'Çalışma Odası' : 'Ekipman' }}
+                <span *ngIf="reservation.room"> - Kapasite: {{ reservation.room.capacity }} kişi</span>
+                <span *ngIf="reservation.equipment"> - {{ reservation.equipment.type }}</span>
+              </p>
+            </div>
+          </div>
+          <span class="status-badge" [ngClass]="getStatusBadge(reservation.status)">
+            {{ getStatusText(reservation.status) }}
+          </span>
+        </div>
+
+        <div class="reservation-details">
+          <div class="detail-item">
+            <span class="detail-label">📅 Tarih:</span>
+            <span class="detail-value">{{ reservation.reservationDate }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">⏰ Saat:</span>
+            <span class="detail-value">
+              {{ reservation.timeSlot?.startTime }} - {{ reservation.timeSlot?.endTime }}
+            </span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">🆔 Rezervasyon No:</span>
+            <span class="detail-value">#{{ reservation.reservationId }}</span>
+          </div>
+        </div>
+
+        <div class="reservation-actions" *ngIf="canCancel(reservation)">
+          <button 
+            class="btn btn-danger"
+            (click)="cancelReservation(reservation.reservationId)"
+          >
+            İptal Et
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info">
+        <h3>{{ activeReservations.length }}</h3>
+        <p>Aktif Rezervasyon</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-info">
+        <h3>{{ allReservations.length }}</h3>
+        <p>Toplam Rezervasyon</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-info">
+        <h3>{{ 2 - activeReservations.length }}</h3>
+        <p>Kalan Hak</p>
+      </div>
+    </div>
+  </div>
+</div>
