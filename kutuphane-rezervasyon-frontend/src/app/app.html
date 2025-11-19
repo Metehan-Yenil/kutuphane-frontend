@@ -1,0 +1,36 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <a routerLink="/dashboard" class="brand-link">
+        <img src="image/logo.png" alt="Logo" class="brand-logo">
+      </a>
+    </div>
+    
+    @if (authService.isLoggedIn()) {
+      <div class="navbar-menu">
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">Anasayfa</a>
+        <a routerLink="/rooms" routerLinkActive="active" class="nav-link">Odalar & Ekipman</a>
+        <a routerLink="/reservations" routerLinkActive="active" class="nav-link">Rezervasyonlarım</a>
+        
+        <div class="navbar-user">
+          <span class="user-name">{{ authService.getCurrentUser()?.name }}</span>
+          @if (authService.isAdmin()) {
+            <a routerLink="/admin" class="admin-badge">Admin</a>
+          }
+          <button (click)="logout()" class="btn-logout">Çıkış</button>
+        </div>
+      </div>
+    } @else {
+      <div class="navbar-menu">
+        <a routerLink="/login" routerLinkActive="active" class="nav-link">Giriş</a>
+        <a routerLink="/register" routerLinkActive="active" class="nav-link">Kayıt Ol</a>
+      </div>
+    }
+  </div>
+</nav>
+
+<main class="main-content">
+  <router-outlet />
+</main>
+
+<app-notification />

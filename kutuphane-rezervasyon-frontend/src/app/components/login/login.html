@@ -1,0 +1,51 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Kütüphane Rezervasyon Sistemi</h1>
+      <p>Hesabınıza giriş yapın</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          [(ngModel)]="loginData.email"
+          required
+          email
+          placeholder="ornek@email.com"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Şifre</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control"
+          [(ngModel)]="loginData.password"
+          required
+          placeholder="••••••••"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-block"
+        [disabled]="!loginForm.valid || isLoading"
+      >
+        {{ isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap' }}
+      </button>
+
+      <div class="register-link">
+        Hesabınız yok mu? <a routerLink="/register">Kayıt olun</a>
+      </div>
+
+    </form>
+  </div>
+</div>
