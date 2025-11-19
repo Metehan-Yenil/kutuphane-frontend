@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kutuphane-frontend
+    restart: unless-stopped
+    ports:
+      - "4201:80"
+    environment:
+      # Backend API URL (container içinden erişim için)
+      - API_URL=http://backend:8080
+    networks:
+      - kutuphane-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+networks:
+  kutuphane-network:
+    external: true
+    name: kutuphane_kutuphane-network
