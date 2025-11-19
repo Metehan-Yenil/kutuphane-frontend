@@ -56,6 +56,10 @@ export class AdminService {
     return this.http.post(`${this.apiUrl}/users/create-admin`, request);
   }
 
+  createUser(request: CreateAdminRequest): Observable<any> {
+    return this.http.post(`http://localhost:8080/api/auth/register`, request);
+  }
+
   promoteToAdmin(userId: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/users/${userId}/promote`, {});
   }

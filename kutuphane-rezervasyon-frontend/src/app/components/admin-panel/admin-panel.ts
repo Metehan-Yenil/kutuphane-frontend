@@ -146,21 +146,21 @@ export class AdminPanelComponent implements OnInit {
     }
   }
 
-  createAdmin() {
+  createUser() {
     if (!this.newAdmin.name || !this.newAdmin.email || !this.newAdmin.password) {
       this.error.set('Tüm alanları doldurun');
       return;
     }
 
-    this.adminService.createAdmin(this.newAdmin).subscribe({
+    this.adminService.createUser(this.newAdmin).subscribe({
       next: () => {
         this.showCreateAdminModal.set(false);
         this.newAdmin = { name: '', email: '', password: '' };
         this.loadUsers();
-        this.notificationService.success('Admin başarıyla oluşturuldu');
+        this.notificationService.success('Kullanıcı başarıyla oluşturuldu');
       },
       error: (err) => {
-        this.notificationService.error(err.error?.message || 'Admin oluşturulamadı');
+        this.notificationService.error(err.error?.message || 'Kullanıcı oluşturulamadı');
       }
     });
   }

@@ -88,7 +88,7 @@
       <div class="tab-header">
         <h2>Kullanıcı Yönetimi</h2>
         <button class="btn-primary" (click)="showCreateAdminModal.set(true)">
-          ➕ Yeni Admin Ekle
+          ➕ Yeni Kullanıcı Ekle
         </button>
       </div>
 
@@ -315,9 +315,9 @@
   @if (showCreateAdminModal()) {
     <div class="modal-overlay" (click)="showCreateAdminModal.set(false)">
       <div class="modal-content" (click)="$event.stopPropagation()">
-        <h2>Yeni Admin Oluştur</h2>
+        <h2>Yeni Kullanıcı Oluştur</h2>
         
-        <form (ngSubmit)="createAdmin()">
+        <form (ngSubmit)="createUser()">
           <div class="form-group">
             <label>İsim</label>
             <input type="text" [(ngModel)]="newAdmin.name" name="name" required>
