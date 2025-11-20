@@ -42,7 +42,7 @@ export interface CreateEquipmentRequest {
 })
 export class AdminService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/admin';
+  private apiUrl = 'https://backend-production-e7d0.up.railway.app/api/admin';
 
   getDashboardStats(): Observable<DashboardStats> {
     return this.http.get<DashboardStats>(`${this.apiUrl}/dashboard`);
@@ -57,7 +57,7 @@ export class AdminService {
   }
 
   createUser(request: CreateAdminRequest): Observable<any> {
-    return this.http.post(`http://localhost:8080/api/auth/register`, request);
+    return this.http.post(`https://backend-production-e7d0.up.railway.app/api/auth/register`, request);
   }
 
   promoteToAdmin(userId: number): Observable<any> {
@@ -129,6 +129,6 @@ export class AdminService {
   }
 
   cancelReservationAdmin(reservationId: number): Observable<any> {
-  return this.http.patch(`http://localhost:8080/api/reservations/${reservationId}/cancel`, {});
+  return this.http.patch(`https://backend-production-e7d0.up.railway.app/api/reservations/${reservationId}/cancel`, {});
 }
 }
