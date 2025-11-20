@@ -15,7 +15,7 @@
         <div class="navbar-user">
           <span class="user-name">{{ authService.getCurrentUser()?.name }}</span>
           @if (authService.isAdmin()) {
-            <a routerLink="/admin" class="admin-badge">Admin</a>
+            <a routerLink="/admin" class="admin-badge">Admin Paneli</a>
           }
           <button (click)="logout()" class="btn-logout">Çıkış</button>
         </div>
