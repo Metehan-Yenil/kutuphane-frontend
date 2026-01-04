@@ -11,7 +11,7 @@ import { User, LoginRequest, RegisterRequest } from '../models/user.model';
 export class AuthService {
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
-  private apiUrl = 'https://backend-production-e7d0.up.railway.app/api/auth';
+  private apiUrl = 'http://localhost:8080/api/auth';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 

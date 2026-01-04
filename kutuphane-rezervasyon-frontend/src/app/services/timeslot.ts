@@ -8,7 +8,7 @@ import { TimeSlot } from '../models/timeslot.model';
 })
 export class TimeslotService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://backend-production-e7d0.up.railway.app/api/timeslots';
+  private apiUrl = 'http://localhost:8080/api/timeslots';
 
   getAllTimeSlots(): Observable<TimeSlot[]> {
     return this.http.get<TimeSlot[]>(this.apiUrl);

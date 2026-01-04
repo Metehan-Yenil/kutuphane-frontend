@@ -1,0 +1,86 @@
+<div class="sql-console">
+  <div class="console-header">
+    <h2>🗄️ SQL Konsol</h2>
+    <p class="warning">⚠️ Sadece SELECT sorguları çalışır. DML/DDL işlemleri engellendi.</p>
+  </div>
+
+  <!-- Örnek Sorgular -->
+  <div class="examples-section">
+    <h3>Örnek Sorgular:</h3>
+    <div class="example-buttons">
+      <button 
+        *ngFor="let example of exampleQueries" 
+        (click)="loadExample(example.query)"
+        class="example-btn">
+        {{ example.name }}
+      </button>
+    </div>
+  </div>
+
+  <!-- SQL Editor -->
+  <div class="editor-section">
+    <label>SQL Sorgusu:</label>
+    <textarea 
+      [(ngModel)]="sqlQuery" 
+      placeholder="SELECT * FROM users WHERE role = 'ADMIN';"
+      rows="8"
+      class="sql-editor">
+    </textarea>
+    
+    <div class="editor-actions">
+      <button (click)="executeQuery()" [disabled]="loading" class="btn-execute">
+        {{ loading ? '⏳ Çalıştırılıyor...' : '▶️ Çalıştır' }}
+      </button>
+      <button (click)="clearQuery()" class="btn-clear">🗑️ Temizle</button>
+    </div>
+  </div>
+
+  <!-- Hata Mesajı -->
+  <div *ngIf="error" class="error-message">
+    ❌ {{ error }}
+  </div>
+
+  <!-- Sonuçlar -->
+  <div *ngIf="queryResult" class="results-section">
+    <div class="results-header">
+      <h3>📊 Sorgu Sonuçları</h3>
+      <div class="results-info">
+        <span>{{ queryResult.rowCount }} satır</span>
+        <span>{{ queryResult.executionTime }}ms</span>
+        <button (click)="exportToCSV()" class="btn-export">📥 CSV İndir</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th *ngFor="let column of queryResult.columns">{{ column }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of queryResult.rows">
+            <td *ngFor="let cell of row">{{ cell }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="queryResult.rowCount === 0" class="empty-result">
+      📭 Sonuç bulunamadı
+    </div>
+  </div>
+
+  <!-- Sorgu Geçmişi -->
+  <div *ngIf="queryHistory.length > 0" class="history-section">
+    <h3>📜 Son Sorgular:</h3>
+    <div class="history-list">
+      <div 
+        *ngFor="let query of queryHistory" 
+        (click)="loadFromHistory(query)"
+        class="history-item">
+        {{ query.substring(0, 100) }}{{ query.length > 100 ? '...' : '' }}
+      </div>
+    </div>
+  </div>
+</div>

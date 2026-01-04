@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { AdminService, DashboardStats, CreateAdminRequest, CreateRoomRequest, CreateEquipmentRequest } from '../../services/admin.service';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../services/notification.service';
+import { SqlConsoleComponent } from '../sql-console/sql-console';
 
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SqlConsoleComponent],
   templateUrl: './admin-panel.html',
   styleUrl: './admin-panel.css'
 })
@@ -20,7 +21,7 @@ export class AdminPanelComponent implements OnInit {
   pendingReservations = signal<any[]>([]);
   allReservations = signal<any[]>([]);
   
-  activeTab = signal<'dashboard' | 'users' | 'rooms' | 'equipment' | 'reservations' | 'all-reservations'>('dashboard');
+  activeTab = signal<'dashboard' | 'users' | 'rooms' | 'equipment' | 'reservations' | 'all-reservations' | 'sql-console'>('dashboard');
   
   showCreateAdminModal = signal(false);
   newAdmin: CreateAdminRequest = { name: '', email: '', password: '' };
@@ -123,7 +124,7 @@ export class AdminPanelComponent implements OnInit {
     });
   }
 
-  switchTab(tab: 'dashboard' | 'users' | 'rooms' | 'equipment' | 'reservations' | 'all-reservations') {
+  switchTab(tab: 'dashboard' | 'users' | 'rooms' | 'equipment' | 'reservations' | 'all-reservations' | 'sql-console') {
     this.activeTab.set(tab);
     this.error.set(null);
     
@@ -211,18 +212,23 @@ export class AdminPanelComponent implements OnInit {
         this.loadRooms();
         this.notificationService.success('Oda durumu güncellendi');
       },
-      error: (err) => this.notificationService.error('Durum güncellenemedi')
+      error: (err: any) => this.notificationService.error('Durum güncellenemedi')
     });
   }
 
   updateEquipmentStatus(equipmentId: number, status: string) {
-    this.adminService.updateEquipmentStatus(equipmentId, status).subscribe({
-      next: () => {
-        this.loadEquipment();
-        this.notificationService.success('Ekipman durumu güncellendi');
-      },
-      error: (err) => this.notificationService.error('Durum güncellenemedi')
-    });
+    // updateEquipmentStatus metodu yok, updateEquipment kullan
+    const equipment = this.equipment().find(e => e.id === equipmentId);
+    if (equipment) {
+      equipment.status = status;
+      this.adminService.updateEquipment(equipmentId, equipment).subscribe({
+        next: () => {
+          this.loadEquipment();
+          this.notificationService.success('Ekipman durumu güncellendi');
+        },
+        error: (err: any) => this.notificationService.error('Durum güncellenemedi')
+      });
+    }
   }
 
   cancelReservation(reservationId: number) {

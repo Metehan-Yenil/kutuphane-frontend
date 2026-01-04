@@ -8,7 +8,7 @@ import { Reservation, ReservationRequest } from '../models/reservation.model';
 })
 export class ReservationService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://backend-production-e7d0.up.railway.app/api/reservations';
+  private apiUrl = 'http://localhost:8080/api/reservations';
 
   getAllReservations(): Observable<Reservation[]> {
     return this.http.get<Reservation[]>(this.apiUrl);

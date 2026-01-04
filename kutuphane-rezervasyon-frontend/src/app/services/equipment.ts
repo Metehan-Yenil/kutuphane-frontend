@@ -8,7 +8,7 @@ import { Equipment } from '../models/equipment.model';
 })
 export class EquipmentService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://backend-production-e7d0.up.railway.app/api/equipment';
+  private apiUrl = 'http://localhost:8080/api/equipment';
 
   getAllEquipment(): Observable<Equipment[]> {
     return this.http.get<Equipment[]>(this.apiUrl);

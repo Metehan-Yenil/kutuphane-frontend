@@ -38,6 +38,11 @@
       (click)="switchTab('all-reservations')">
       📋 Tüm Rezervasyonlar
     </button>
+    <button 
+      [class.active]="activeTab() === 'sql-console'" 
+      (click)="switchTab('sql-console')">
+      🗄️ SQL Konsol
+    </button>
   </div>
 
   @if (error()) {
@@ -425,5 +430,10 @@
         </form>
       </div>
     </div>
+  }
+
+  <!-- SQL Console Tab -->
+  @if (activeTab() === 'sql-console') {
+    <app-sql-console></app-sql-console>
   }
 </div>

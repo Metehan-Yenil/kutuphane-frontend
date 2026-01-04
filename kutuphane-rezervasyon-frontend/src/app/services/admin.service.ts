@@ -42,7 +42,7 @@ export interface CreateEquipmentRequest {
 })
 export class AdminService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://backend-production-e7d0.up.railway.app/api/admin';
+  private apiUrl = 'http://localhost:8080/api/admin';
 
   getDashboardStats(): Observable<DashboardStats> {
     return this.http.get<DashboardStats>(`${this.apiUrl}/dashboard`);
@@ -57,7 +57,7 @@ export class AdminService {
   }
 
   createUser(request: CreateAdminRequest): Observable<any> {
-    return this.http.post(`https://backend-production-e7d0.up.railway.app/api/auth/register`, request);
+    return this.http.post(`http://localhost:8080/api/auth/register`, request);
   }
 
   promoteToAdmin(userId: number): Observable<any> {
@@ -124,11 +124,12 @@ export class AdminService {
     return this.http.patch(`${this.apiUrl}/rooms/${roomId}/status?status=${status}`, {});
   }
 
-  updateEquipmentStatus(equipmentId: number, status: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/equipment/${equipmentId}/status?status=${status}`, {});
+  cancelReservationByAdmin(reservationId: number): Observable<any> {
+    return this.http.patch(`http://localhost:8080/api/reservations/${reservationId}/cancel`, {});
   }
 
-  cancelReservationAdmin(reservationId: number): Observable<any> {
-  return this.http.patch(`https://backend-production-e7d0.up.railway.app/api/reservations/${reservationId}/cancel`, {});
-}
+  // SQL Console
+  executeSqlQuery(query: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sql/execute`, { query });
+  }
 }
